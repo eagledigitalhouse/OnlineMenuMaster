@@ -48,7 +48,8 @@ export default function DishModal({ dish, isOpen, onClose }: DishModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[95vh] overflow-hidden p-0 rounded-3xl">
+      <DialogContent className="max-w-md max-h-[95vh] overflow-hidden p-0 rounded-3xl" aria-describedby="dish-description">
+        <DialogTitle className="sr-only">{dish.name}</DialogTitle>
         {/* Header with close and share buttons */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
           <Button

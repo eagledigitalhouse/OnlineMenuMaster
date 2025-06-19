@@ -83,7 +83,7 @@ export default function Home() {
         <div className="h-20 fenui-gradient relative overflow-hidden">
           <div className="absolute inset-0 fenui-mosaic opacity-20"></div>
           <div className="container mx-auto px-4 h-full flex items-center justify-center relative">
-            <h1 className="text-white text-2xl md:text-3xl font-bold tracking-wide">
+            <h1 className="font-display text-white text-2xl md:text-3xl font-bold tracking-wide">
               FENUI 2024
             </h1>
           </div>
@@ -122,10 +122,12 @@ export default function Home() {
         {/* Featured Dishes */}
         {featuredDishes.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <Star className="w-7 h-7 text-yellow-500 mr-3 fill-current" />
-              Destaques do Festival
-              <span className="ml-auto text-sm font-normal text-gray-500 bg-yellow-50 px-3 py-1 rounded-full flex items-center gap-1">
+            <h2 className="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2">
+              <div className="flex items-center">
+                <Star className="w-7 h-7 text-yellow-500 mr-3 fill-current" />
+                <span>Destaques do Festival</span>
+              </div>
+              <span className="text-sm font-body font-normal text-gray-500 bg-yellow-50 px-3 py-1 rounded-full flex items-center gap-1 ml-auto">
                 <Star className="w-3 h-3 fill-current" />
                 {featuredDishes.length} pratos
               </span>
@@ -201,12 +203,14 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-fenui-dark mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-yellow">
-                  <span className="text-3xl mr-4">
-                    {countries.find(c => c.id === selectedCountry)?.flagEmoji}
-                  </span>
-                  {countries.find(c => c.id === selectedCountry)?.name}
-                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                <h2 className="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2 sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx-4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
+                  <div className="flex items-center">
+                    <span className="text-3xl mr-4">
+                      {countries.find(c => c.id === selectedCountry)?.flagEmoji}
+                    </span>
+                    <span>{countries.find(c => c.id === selectedCountry)?.name}</span>
+                  </div>
+                  <span className="text-sm font-body font-normal text-gray-500 bg-orange-50 px-3 py-1 rounded-full ml-auto">
                     {allDishes.filter(d => d.category !== 'bebidas').length} pratos
                   </span>
                 </h2>
@@ -240,10 +244,12 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx--4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
-                <Coffee className="w-6 h-6 text-blue-600 mr-3" />
-                Bebidas & Sucos
-                <span className="ml-auto text-sm font-normal text-gray-500 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1">
+              <h2 className="font-display text-xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2 sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx-4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
+                <div className="flex items-center">
+                  <Coffee className="w-6 h-6 text-blue-600 mr-3" />
+                  <span>Bebidas & Sucos</span>
+                </div>
+                <span className="text-sm font-body font-normal text-gray-500 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1 ml-auto">
                   <Coffee className="w-3 h-3" />
                   {Object.values(drinksByCountry).flat().length} opções
                 </span>
@@ -308,31 +314,31 @@ export default function Home() {
       <footer className="bg-gray-900 text-white py-12 mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold mb-2">FENUI 2024</h3>
-            <p className="text-gray-300 text-lg">Festa das Nações de Indaiatuba</p>
+            <h3 className="font-display text-3xl font-bold mb-2">FENUI 2024</h3>
+            <p className="font-body text-gray-300 text-lg">Festa das Nações de Indaiatuba</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
             <div>
-              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
                 <MapPin className="w-5 h-5" />
                 Local
               </h4>
-              <p className="text-gray-300">Parque Ecológico de Indaiatuba</p>
-              <p className="text-gray-300">Rua das Nações, 123</p>
+              <p className="font-body text-gray-300">Parque Ecológico de Indaiatuba</p>
+              <p className="font-body text-gray-300">Rua das Nações, 123</p>
             </div>
             
             <div>
-              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
                 <Clock className="w-5 h-5" />
                 Datas & Horários
               </h4>
-              <p className="text-gray-300">15 a 25 de Dezembro</p>
-              <p className="text-gray-300">18h às 23h</p>
+              <p className="font-body text-gray-300">15 a 25 de Dezembro</p>
+              <p className="font-body text-gray-300">18h às 23h</p>
             </div>
             
             <div>
-              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
                 <Users className="w-5 h-5" />
                 Contato
               </h4>
