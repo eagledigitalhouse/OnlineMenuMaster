@@ -33,7 +33,26 @@ export default function Home() {
   const dishesByCountry = useMemo(() => {
     const grouped: Record<string, DishWithCountry[]> = {};
     
-    allDishes.forEach(dish => {
+    // Separate drinks from other dishes
+    const nonDrinkDishes = allDishes.filter(dish => dish.category !== 'bebidas');
+    
+    nonDrinkDishes.forEach(dish => {
+      const countryName = dish.country.name;
+      if (!grouped[countryName]) {
+        grouped[countryName] = [];
+      }
+      grouped[countryName].push(dish);
+    });
+
+    return grouped;
+  }, [allDishes]);
+
+  const drinksByCountry = useMemo(() => {
+    const grouped: Record<string, DishWithCountry[]> = {};
+    
+    const drinkDishes = allDishes.filter(dish => dish.category === 'bebidas');
+    
+    drinkDishes.forEach(dish => {
       const countryName = dish.country.name;
       if (!grouped[countryName]) {
         grouped[countryName] = [];
@@ -126,8 +145,8 @@ export default function Home() {
           </section>
         )}
 
-        {/* Dishes by Country */}
-        <AnimatePresence mode="wait">
+        {/* Food Dishes by Country */}
+        <div className="mb-12">
           {selectedCountry === null ? (
             /* Show all dishes grouped by country when no country is selected */
             Object.entries(dishesByCountry)
@@ -135,28 +154,27 @@ export default function Home() {
               .map(([countryName, dishes]) => (
               <motion.section
                 key={countryName}
-                className="mb-8"
+                className="mb-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center sticky top-32 bg-gray-50 py-2 z-20">
-                  <span className="text-2xl mr-3">
+                <h2 className="text-2xl font-bold text-fenui-dark mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-yellow">
+                  <span className="text-3xl mr-4">
                     {dishes[0]?.country.flagEmoji}
                   </span>
                   {countryName}
-                  <span className="ml-auto text-sm font-normal text-gray-500">
+                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
                     {dishes.length} {dishes.length === 1 ? 'prato' : 'pratos'}
                   </span>
                 </h2>
-                <div className="space-y-3">
-                  {dishes.map((dish) => (
+                <div className="space-y-4">
+                  {dishes.map((dish, index) => (
                     <motion.div
                       key={dish.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
                       <DishCard
                         dish={dish}
@@ -172,28 +190,27 @@ export default function Home() {
             /* Show dishes from selected country only */
             selectedCountry && dishesByCountry[countries.find(c => c.id === selectedCountry)?.name || ''] && (
               <motion.section
-                className="mb-8"
+                className="mb-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center sticky top-32 bg-gray-50 py-2 z-20">
-                  <span className="text-2xl mr-3">
+                <h2 className="text-2xl font-bold text-fenui-dark mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-yellow">
+                  <span className="text-3xl mr-4">
                     {countries.find(c => c.id === selectedCountry)?.flagEmoji}
                   </span>
                   {countries.find(c => c.id === selectedCountry)?.name}
-                  <span className="ml-auto text-sm font-normal text-gray-500">
-                    {allDishes.length} {allDishes.length === 1 ? 'prato' : 'pratos'}
+                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                    {allDishes.filter(d => d.category !== 'bebidas').length} pratos
                   </span>
                 </h2>
-                <div className="space-y-3">
-                  {allDishes.map((dish) => (
+                <div className="space-y-4">
+                  {allDishes.filter(d => d.category !== 'bebidas').map((dish, index) => (
                     <motion.div
                       key={dish.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
                       <DishCard
                         dish={dish}
@@ -206,7 +223,58 @@ export default function Home() {
               </motion.section>
             )
           )}
-        </AnimatePresence>
+        </div>
+
+        {/* Drinks Section - Separate */}
+        {Object.keys(drinksByCountry).length > 0 && (
+          <div className="mb-12">
+            <motion.section
+              className="mb-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h2 className="text-2xl font-bold text-fenui-blue mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-blue">
+                <span className="text-3xl mr-4">🥤</span>
+                Bebidas & Sucos
+                <span className="ml-auto text-sm font-normal text-gray-500 bg-blue-100 px-3 py-1 rounded-full">
+                  {Object.values(drinksByCountry).flat().length} opções
+                </span>
+              </h2>
+              
+              <div className="space-y-8">
+                {Object.entries(drinksByCountry)
+                  .sort(([, dishesA], [, dishesB]) => dishesA[0]?.country.order - dishesB[0]?.country.order)
+                  .map(([countryName, drinks]) => (
+                  <div key={countryName} className="space-y-4">
+                    <h3 className="text-lg font-semibold text-fenui-dark flex items-center">
+                      <span className="text-xl mr-3">
+                        {drinks[0]?.country.flagEmoji}
+                      </span>
+                      {countryName}
+                    </h3>
+                    <div className="space-y-3">
+                      {drinks.map((drink, index) => (
+                        <motion.div
+                          key={drink.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                        >
+                          <DishCard
+                            dish={drink}
+                            onClick={() => handleDishClick(drink)}
+                            horizontal
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+          </div>
+        )}
 
         {allDishes.length === 0 && (
           <div className="text-center py-16">
