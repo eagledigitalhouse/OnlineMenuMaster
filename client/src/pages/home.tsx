@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, Settings } from "lucide-react";
+import { Search, Settings, Coffee, MapPin, Clock, Users, Utensils, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -121,18 +121,22 @@ export default function Home() {
       <main className="container mx-auto px-4 py-6 pb-32">
         {/* Featured Dishes */}
         {featuredDishes.length > 0 && (
-          <section className="mb-8">
-            <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center">
-              <span className="text-fenui-yellow mr-2">⭐</span>
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <Star className="w-7 h-7 text-yellow-500 mr-3 fill-current" />
               Destaques do Festival
+              <span className="ml-auto text-sm font-normal text-gray-500 bg-yellow-50 px-3 py-1 rounded-full flex items-center gap-1">
+                <Star className="w-3 h-3 fill-current" />
+                {featuredDishes.length} pratos
+              </span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredDishes.map((dish) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredDishes.map((dish, index) => (
                 <motion.div
                   key={dish.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
                   <DishCard
                     dish={dish}
@@ -159,12 +163,14 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-fenui-dark mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-yellow">
-                  <span className="text-3xl mr-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx--4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
+                  <MapPin className="w-6 h-6 text-blue-600 mr-3" />
+                  <span className="text-2xl mr-3">
                     {dishes[0]?.country.flagEmoji}
                   </span>
                   {countryName}
-                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full flex items-center gap-1">
+                    <Utensils className="w-3 h-3" />
                     {dishes.length} {dishes.length === 1 ? 'prato' : 'pratos'}
                   </span>
                 </h2>
@@ -234,10 +240,11 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-2xl font-bold text-fenui-blue mb-6 flex items-center sticky top-32 bg-gray-50 py-3 z-20 border-b-2 border-fenui-blue">
-                <span className="text-3xl mr-4">🥤</span>
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx--4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
+                <Coffee className="w-6 h-6 text-blue-600 mr-3" />
                 Bebidas & Sucos
-                <span className="ml-auto text-sm font-normal text-gray-500 bg-blue-100 px-3 py-1 rounded-full">
+                <span className="ml-auto text-sm font-normal text-gray-500 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1">
+                  <Coffee className="w-3 h-3" />
                   {Object.values(drinksByCountry).flat().length} opções
                 </span>
               </h2>
@@ -298,43 +305,52 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-fenui-dark text-white py-8 mt-16">
+      <footer className="bg-gray-900 text-white py-12 mt-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold mb-2">FENUI 2024</h3>
-            <p className="text-gray-300">Festa das Nações de Indaiatuba</p>
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold mb-2">FENUI 2024</h3>
+            <p className="text-gray-300 text-lg">Festa das Nações de Indaiatuba</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
             <div>
-              <h4 className="font-bold mb-2 text-fenui-yellow">📍 Local</h4>
+              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+                <MapPin className="w-5 h-5" />
+                Local
+              </h4>
               <p className="text-gray-300">Parque Ecológico de Indaiatuba</p>
               <p className="text-gray-300">Rua das Nações, 123</p>
             </div>
             
             <div>
-              <h4 className="font-bold mb-2 text-fenui-yellow">📅 Datas</h4>
+              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+                <Clock className="w-5 h-5" />
+                Datas & Horários
+              </h4>
               <p className="text-gray-300">15 a 25 de Dezembro</p>
               <p className="text-gray-300">18h às 23h</p>
             </div>
             
             <div>
-              <h4 className="font-bold mb-2 text-fenui-yellow">📱 Contato</h4>
+              <h4 className="font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
+                <Users className="w-5 h-5" />
+                Contato
+              </h4>
               <div className="flex justify-center md:justify-start gap-4 mt-2">
-                <a href="#" className="text-2xl hover:text-fenui-yellow transition-colors">
-                  📷
+                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
+                  <Users className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-2xl hover:text-fenui-yellow transition-colors">
-                  📘
+                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
+                  <MapPin className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-2xl hover:text-fenui-yellow transition-colors">
-                  📱
+                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
+                  <Coffee className="w-5 h-5" />
                 </a>
               </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+          <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
             <p>&copy; 2024 FENUI - Festa das Nações de Indaiatuba. Todos os direitos reservados.</p>
           </div>
         </div>
