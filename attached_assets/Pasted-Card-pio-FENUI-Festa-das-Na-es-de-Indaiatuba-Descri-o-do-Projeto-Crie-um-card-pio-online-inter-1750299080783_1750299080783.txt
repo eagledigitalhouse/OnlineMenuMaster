@@ -1,0 +1,133 @@
+Cardápio FENUI – Festa das Nações de Indaiatuba
+
+Descrição do Projeto:
+Crie um cardápio online interativo para a FENUI (Festa das Nações de Indaiatuba). O objetivo é apresentar de forma alegre, moderna e organizada os pratos típicos de cada país participante do evento, seguindo fielmente a identidade visual da FENUI (utilize obrigatoriamente o mosaico oficial fornecido, extraindo as cores principais e aplicando elementos gráficos).
+O sistema deve oferecer uma experiência mobile excelente, ser intuitivo, rápido, acessível e responsivo também para desktop. A navegação principal será inspirada no formato de “stories”, como no Instagram: cada país aparece no topo como um círculo ou card (com bandeira e nome), e ao clicar, apenas filtra os pratos daquele país na mesma tela, sem navegação para outra página (nada de reload ou navegação para outra rota; mantenha tudo dinâmico e em uma única página).
+O sistema deve ter um painel administrativo seguro para cadastrar, editar e remover países e pratos, com upload de imagens, destaque de pratos, gerenciamento de disponibilidade e estatísticas simples.
+
+Plataforma Alvo:
+Web (mobile first, responsivo para desktop)
+
+Ambiente de Operação:
+Online
+
+Hospedagem:
+Replit
+
+Estilo da Interface:
+
+Alegre, colorido, mas limpo e fácil de navegar
+
+Uso obrigatório do mosaico das bandeiras da FENUI (imagem fornecida), fonte e cores extraídas do mosaico
+
+Navegação tipo stories (círculos/cards dos países no topo, em ordem alfabética)
+
+Fundo branco ou claro, mosaicos coloridos, bandeiras ou ícones de cada país
+
+Fotos reais dos pratos, grandes e de alta qualidade
+
+Animações suaves ao trocar de país (filtragem) ou abrir prato
+
+Elementos visuais de transição (mosaico/bandeiras), sem poluir
+
+Contraste forte e botões grandes para acessibilidade
+
+Utilizar Tailwind CSS na versão mais moderna possível
+
+Aplicativos de Referência:
+
+Stories do Instagram (para a navegação entre países)
+
+Cardápios digitais modernos (mas com identidade visual única da FENUI)
+
+Estrutura das Telas e Funcionalidades Principais:
+
+Página Inicial:
+
+Banner da FENUI no topo
+
+Navegação horizontal com “stories” dos países (círculos/cards com bandeira e nome)
+
+Destaque para pratos do dia, promoções ou sugestões do evento
+
+Campo de busca por nome do prato
+
+Rodapé fixo com informações do evento: local, datas, horários, redes sociais e contato
+
+Cardápio:
+
+Cards dos pratos daquele país (apenas filtragem, não muda de página)
+
+Cada card deve mostrar:
+
+Nome
+
+Descrição breve
+
+Foto real do prato
+
+Preço
+
+Tags (vegetariano, doce, salgado, vegano, bebida, etc)
+
+Indicador de alérgenos se houver
+
+Tela de Detalhe do Prato (opcional):
+
+Mais informações, curiosidades, harmonizações
+
+Foto ampliada
+
+Opção de compartilhar via WhatsApp/Instagram
+
+Funcionalidades Extras:
+
+Filtros rápidos por tipo (doces, salgados, veganos, bebidas)
+
+Busca por ingredientes
+
+Acessibilidade: fontes grandes, contraste forte, botões acessíveis
+
+Compartilhamento fácil de pratos
+
+Layout totalmente responsivo (mobile first)
+
+Painel de Administração (admin):
+
+Login protegido
+
+Cadastro, edição e exclusão de países (com imagem/bandeira)
+
+Cadastro, edição e exclusão de pratos (com foto, descrição, preço, país/categoria)
+
+Upload de imagens direto pelo painel
+
+Destaque/promoção de pratos
+
+Possibilidade de ocultar pratos esgotados
+
+Reordenação fácil dos países (drag and drop)
+
+Dashboard simples: quantidade de pratos por país, quantos acessos
+
+Interface do painel toda em português
+
+Idiomas:
+Todo o sistema, painel admin e interface em português
+(Traduções automáticas podem ser adicionadas futuramente, mas não são prioridade agora)
+
+Observações Importantes:
+
+Priorize a identidade visual da FENUI (usar mosaico das bandeiras, fontes e cores oficiais fornecidas)
+
+As imagens dos pratos serão fotos reais
+
+Garanta uma experiência intuitiva, limpa, com navegação fluida e destaque para os pratos
+
+A navegação entre países é feita apenas por filtragem na mesma tela (sem navegação de páginas)
+
+Destaque sempre visível para informações do evento no rodapé
+
+Siga os padrões de acessibilidade (contraste, fontes, botões grandes)
+
+Utilize Tailwind CSS atualizado para todo o layout
