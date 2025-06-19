@@ -21,7 +21,7 @@ export default function Home() {
   const { data: countries = [] } = useCountries();
   const { data: allDishes = [] } = useDishes({
     search: searchQuery,
-    countryId: selectedCountry,
+    countryId: selectedCountry || undefined,
     category: selectedCategory === "all" ? undefined : selectedCategory,
   });
 
@@ -128,39 +128,84 @@ export default function Home() {
 
         {/* Dishes by Country */}
         <AnimatePresence mode="wait">
-          {Object.entries(dishesByCountry).map(([countryName, dishes]) => (
-            <motion.section
-              key={countryName}
-              className="mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center">
-                <span className="text-2xl mr-3">
-                  {dishes[0]?.country.flagEmoji}
-                </span>
-                {countryName}
-              </h2>
-              <div className="space-y-4">
-                {dishes.map((dish) => (
-                  <motion.div
-                    key={dish.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <DishCard
-                      dish={dish}
-                      onClick={() => handleDishClick(dish)}
-                      horizontal
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.section>
-          ))}
+          {selectedCountry === null ? (
+            /* Show all dishes grouped by country when no country is selected */
+            Object.entries(dishesByCountry)
+              .sort(([, dishesA], [, dishesB]) => dishesA[0]?.country.order - dishesB[0]?.country.order)
+              .map(([countryName, dishes]) => (
+              <motion.section
+                key={countryName}
+                className="mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center sticky top-32 bg-gray-50 py-2 z-20">
+                  <span className="text-2xl mr-3">
+                    {dishes[0]?.country.flagEmoji}
+                  </span>
+                  {countryName}
+                  <span className="ml-auto text-sm font-normal text-gray-500">
+                    {dishes.length} {dishes.length === 1 ? 'prato' : 'pratos'}
+                  </span>
+                </h2>
+                <div className="space-y-3">
+                  {dishes.map((dish) => (
+                    <motion.div
+                      key={dish.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <DishCard
+                        dish={dish}
+                        onClick={() => handleDishClick(dish)}
+                        horizontal
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.section>
+            ))
+          ) : (
+            /* Show dishes from selected country only */
+            selectedCountry && dishesByCountry[countries.find(c => c.id === selectedCountry)?.name || ''] && (
+              <motion.section
+                className="mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="text-xl font-bold text-fenui-dark mb-4 flex items-center sticky top-32 bg-gray-50 py-2 z-20">
+                  <span className="text-2xl mr-3">
+                    {countries.find(c => c.id === selectedCountry)?.flagEmoji}
+                  </span>
+                  {countries.find(c => c.id === selectedCountry)?.name}
+                  <span className="ml-auto text-sm font-normal text-gray-500">
+                    {allDishes.length} {allDishes.length === 1 ? 'prato' : 'pratos'}
+                  </span>
+                </h2>
+                <div className="space-y-3">
+                  {allDishes.map((dish) => (
+                    <motion.div
+                      key={dish.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <DishCard
+                        dish={dish}
+                        onClick={() => handleDishClick(dish)}
+                        horizontal
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.section>
+            )
+          )}
         </AnimatePresence>
 
         {allDishes.length === 0 && (

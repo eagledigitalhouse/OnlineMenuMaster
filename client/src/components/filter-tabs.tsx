@@ -11,8 +11,6 @@ const categories = [
   { id: "salgados", label: "Salgados" },
   { id: "doces", label: "Doces" },
   { id: "bebidas", label: "Bebidas" },
-  { id: "vegetariano", label: "Vegetariano" },
-  { id: "vegano", label: "Vegano" },
 ];
 
 export default function FilterTabs({
