@@ -44,7 +44,14 @@ export default function Home() {
       grouped[countryName].push(dish);
     });
 
-    return grouped;
+    // Sort countries alphabetically
+    const sortedCountries = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    const sortedGrouped = {} as Record<string, DishWithCountry[]>;
+    sortedCountries.forEach(country => {
+      sortedGrouped[country] = grouped[country];
+    });
+
+    return sortedGrouped;
   }, [allDishes]);
 
   const drinksByCountry = useMemo(() => {
@@ -60,7 +67,14 @@ export default function Home() {
       grouped[countryName].push(dish);
     });
 
-    return grouped;
+    // Sort countries alphabetically for drinks too
+    const sortedCountries = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    const sortedGrouped = {} as Record<string, DishWithCountry[]>;
+    sortedCountries.forEach(country => {
+      sortedGrouped[country] = grouped[country];
+    });
+
+    return sortedGrouped;
   }, [allDishes]);
 
   const handleCountryFilter = (countryId: number | null) => {
@@ -73,6 +87,26 @@ export default function Home() {
 
   const handleDishClick = (dish: DishWithCountry) => {
     setSelectedDish(dish);
+  };
+
+  // Country colors mapping
+  const getCountryTheme = (countryName: string) => {
+    const themes: Record<string, { bg: string; text: string; border: string; accent: string }> = {
+      'Suíça': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', accent: 'bg-red-500' },
+      'Alemanha': { bg: 'bg-yellow-50', text: 'text-yellow-800', border: 'border-yellow-200', accent: 'bg-yellow-500' },
+      'Argentina': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', accent: 'bg-blue-500' },
+      'Brasil': { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', accent: 'bg-green-500' },
+      'Chile': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', accent: 'bg-red-500' },
+      'Coreia do Sul': { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', accent: 'bg-purple-500' },
+      'Espanha': { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', accent: 'bg-orange-500' },
+      'França': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', accent: 'bg-blue-500' },
+      'Grécia': { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', accent: 'bg-cyan-500' },
+      'Itália': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', accent: 'bg-emerald-500' },
+      'Japão': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', accent: 'bg-rose-500' },
+      'Portugal': { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accent: 'bg-indigo-500' },
+    };
+    
+    return themes[countryName] || { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200', accent: 'bg-gray-500' };
   };
 
   return (
@@ -165,13 +199,15 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx--4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
-                  <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-                  <span className="text-2xl mr-3">
-                    {dishes[0]?.country.flagEmoji}
-                  </span>
-                  {countryName}
-                  <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full flex items-center gap-1">
+                <h2 className={`font-display text-xl font-bold mb-6 flex items-center flex-wrap gap-2 sticky top-32 backdrop-blur-sm py-4 px-4 mx-4 z-20 rounded-lg shadow-sm border ${getCountryTheme(countryName).bg} ${getCountryTheme(countryName).text} ${getCountryTheme(countryName).border}`}>
+                  <div className="flex items-center">
+                    <div className={`w-2 h-8 rounded-full mr-4 ${getCountryTheme(countryName).accent}`}></div>
+                    <span className="text-2xl mr-3">
+                      {dishes[0]?.country.flagEmoji}
+                    </span>
+                    <span>{countryName}</span>
+                  </div>
+                  <span className={`text-sm font-body font-normal px-3 py-1 rounded-full flex items-center gap-1 ml-auto ${getCountryTheme(countryName).bg} border ${getCountryTheme(countryName).border}`}>
                     <Utensils className="w-3 h-3" />
                     {dishes.length} {dishes.length === 1 ? 'prato' : 'pratos'}
                   </span>
@@ -256,15 +292,18 @@ export default function Home() {
               </h2>
               
               <div className="space-y-8">
-                {Object.entries(drinksByCountry)
-                  .sort(([, dishesA], [, dishesB]) => dishesA[0]?.country.order - dishesB[0]?.country.order)
-                  .map(([countryName, drinks]) => (
+                {Object.entries(drinksByCountry).map(([countryName, drinks]) => (
                   <div key={countryName} className="space-y-4">
-                    <h3 className="text-lg font-semibold text-fenui-dark flex items-center">
+                    <h3 className={`font-display text-lg font-semibold flex items-center py-3 px-4 rounded-lg ${getCountryTheme(countryName).bg} ${getCountryTheme(countryName).text} border ${getCountryTheme(countryName).border}`}>
+                      <div className={`w-1 h-6 rounded-full mr-3 ${getCountryTheme(countryName).accent}`}></div>
                       <span className="text-xl mr-3">
                         {drinks[0]?.country.flagEmoji}
                       </span>
-                      {countryName}
+                      <span>{countryName}</span>
+                      <span className={`ml-auto text-sm font-body font-normal px-2 py-1 rounded-full ${getCountryTheme(countryName).bg} border ${getCountryTheme(countryName).border}`}>
+                        <Coffee className="w-3 h-3 inline mr-1" />
+                        {drinks.length} {drinks.length === 1 ? 'bebida' : 'bebidas'}
+                      </span>
                     </h3>
                     <div className="space-y-3">
                       {drinks.map((drink, index) => (

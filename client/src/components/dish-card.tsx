@@ -59,6 +59,9 @@ export default function DishCard({
               {dish.country.flagEmoji} {dish.country.name}
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
+              {dish.category === 'salgados' && <UtensilsCrossed className="w-3 h-3 mr-1" />}
+              {dish.category === 'doces' && <Cookie className="w-3 h-3 mr-1" />}
+              {dish.category === 'bebidas' && <Coffee className="w-3 h-3 mr-1" />}
               {dish.category}
             </Badge>
           </div>
@@ -70,6 +73,25 @@ export default function DishCard({
           <p className="font-body text-gray-600 text-sm leading-relaxed line-clamp-3 min-h-[3.75rem]">
             {dish.description}
           </p>
+
+          {/* Tags with icons */}
+          {dish.tags && dish.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {dish.tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                  {tag === 'vegetariano' && <Leaf className="w-3 h-3 mr-1" />}
+                  {tag === 'vegano' && <Leaf className="w-3 h-3 mr-1" />}
+                  {tag === 'picante' && <AlertTriangle className="w-3 h-3 mr-1" />}
+                  {tag}
+                </Badge>
+              ))}
+              {dish.tags.length > 3 && (
+                <Badge variant="outline" className="text-xs text-gray-500">
+                  +{dish.tags.length - 3}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     );
@@ -147,6 +169,9 @@ export default function DishCard({
             {dish.country.flagEmoji} {dish.country.name}
           </Badge>
           <Badge variant="outline" className="text-xs bg-gray-50">
+            {dish.category === 'salgados' && <UtensilsCrossed className="w-3 h-3 mr-1" />}
+            {dish.category === 'doces' && <Cookie className="w-3 h-3 mr-1" />}
+            {dish.category === 'bebidas' && <Coffee className="w-3 h-3 mr-1" />}
             {dish.category}
           </Badge>
         </div>
@@ -159,11 +184,14 @@ export default function DishCard({
           {dish.description}
         </p>
 
-        {/* Tags */}
+        {/* Tags with icons */}
         {dish.tags && dish.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {dish.tags.slice(0, 2).map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                {tag === 'vegetariano' && <Leaf className="w-3 h-3 mr-1" />}
+                {tag === 'vegano' && <Leaf className="w-3 h-3 mr-1" />}
+                {tag === 'picante' && <AlertTriangle className="w-3 h-3 mr-1" />}
                 {tag}
               </Badge>
             ))}
