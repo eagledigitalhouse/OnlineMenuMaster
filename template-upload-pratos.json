@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Nome do Prato",
+    "description": "Descrição detalhada do prato, ingredientes e modo de preparo",
+    "price": "25.50",
+    "image": "https://exemplo.com/imagem.jpg",
+    "countryId": 1,
+    "category": "salgados",
+    "tags": ["vegetariano", "vegano", "picante", "sem-gluten"],
+    "allergens": ["glúten", "lactose", "ovos", "amendoim", "frutos-do-mar"],
+    "rating": "4.50",
+    "reviewCount": 15,
+    "isFeatured": true,
+    "isAvailable": true,
+    "order": 1
+  },
+  {
+    "name": "Pizza Margherita",
+    "description": "Pizza tradicional italiana com molho de tomate, mussarela de búfala, manjericão fresco e azeite extra virgem",
+    "price": "45.00",
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400",
+    "countryId": 12,
+    "category": "salgados",
+    "tags": ["vegetariano", "tradicional"],
+    "allergens": ["glúten", "lactose"],
+    "rating": "4.80",
+    "reviewCount": 23,
+    "isFeatured": true,
+    "isAvailable": true,
+    "order": 1
+  },
+  {
+    "name": "Tiramisu",
+    "description": "Sobremesa italiana clássica com camadas de biscoito champanhe embebido no café, creme de mascarpone e cacau em pó",
+    "price": "22.00",
+    "image": null,
+    "countryId": 12,
+    "category": "doces",
+    "tags": ["vegetariano", "café"],
+    "allergens": ["glúten", "lactose", "ovos", "álcool"],
+    "rating": "4.70",
+    "reviewCount": 18,
+    "isFeatured": false,
+    "isAvailable": true,
+    "order": 2
+  },
+  {
+    "name": "Caipirinha",
+    "description": "Drink brasileiro tradicional com cachaça, limão, açúcar e gelo",
+    "price": "15.00",
+    "image": "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&h=400",
+    "countryId": 5,
+    "category": "bebidas",
+    "tags": ["tradicional", "refrescante"],
+    "allergens": ["álcool"],
+    "rating": "4.20",
+    "reviewCount": 8,
+    "isFeatured": false,
+    "isAvailable": true,
+    "order": 1
+  }
+] 

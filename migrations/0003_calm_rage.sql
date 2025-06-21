@@ -1,0 +1,1 @@
+ALTER TABLE "eventos" ADD COLUMN "is_featured" boolean DEFAULT false NOT NULL;

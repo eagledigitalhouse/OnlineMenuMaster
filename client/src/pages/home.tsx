@@ -1,414 +1,407 @@
-import { useState, useMemo } from "react";
-import { Search, Settings, Coffee, MapPin, Clock, Users, Utensils, Star } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import CountryStories from "@/components/country-stories";
-import FilterTabs from "@/components/filter-tabs";
-import DishCard from "@/components/dish-card";
-import DishModal from "@/components/dish-modal";
-import { useDishes } from "@/hooks/use-dishes";
+import { useState, useMemo, useEffect } from "react";
 import { useCountries } from "@/hooks/use-countries";
-import { Dish, DishWithCountry } from "@shared/schema";
+import { useDishes } from "@/hooks/use-dishes";
+import { useBanners } from "@/hooks/use-banners";
+import CountryStories from "@/components/country-stories";
+import DishCarousel from "@/components/dish-carousel";
+import BannerCarousel from "@/components/banner-carousel";
+import FenuiBanner from "@/components/fenui-banner";
+import DishModal from "@/components/dish-modal";
+import NewBottomNavigation from "@/components/new-bottom-navigation";
+import { HyperText } from "@/components/ui/hyper-text";
+import { Input } from "@/components/ui/input";
+import { Search, Coffee, UtensilsCrossed, Cookie, Grid3X3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { DishWithCountry } from "@shared/schema";
+import { FENUI_COLORS } from "@/lib/theme-colors";
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDish, setSelectedDish] = useState<DishWithCountry | null>(null);
+  const [showWelcomeStamp, setShowWelcomeStamp] = useState(false);
+
+  // Verificar se veio da página de boas-vindas
+  useEffect(() => {
+    const fromWelcome = sessionStorage.getItem('fromWelcome');
+    if (fromWelcome === 'true') {
+      sessionStorage.removeItem('fromWelcome');
+      // Mostrar carimbo após 1 segundo
+      setTimeout(() => {
+        setShowWelcomeStamp(true);
+      }, 1000);
+      
+      // Esconder carimbo após 4 segundos
+      setTimeout(() => {
+        setShowWelcomeStamp(false);
+      }, 5000);
+    }
+  }, []);
 
   const { data: countries = [] } = useCountries();
-  const { data: allDishes = [] } = useDishes({
-    search: searchQuery,
-    countryId: selectedCountry || undefined,
-    category: selectedCategory === "all" ? undefined : selectedCategory,
-  });
+  const { data: dishes = [] } = useDishes();
+  const { data: banners = [] } = useBanners();
 
-  const featuredDishes = useMemo(() => 
-    allDishes.filter(dish => dish.isFeatured).slice(0, 3),
-    [allDishes]
-  );
+  // Categorias para os filtros
+  const categories = [
+    { id: "all", label: "Todos", icon: Grid3X3 },
+    { id: "salgados", label: "Salgados", icon: UtensilsCrossed },
+    { id: "doces", label: "Doces", icon: Cookie },
+    { id: "bebidas", label: "Bebidas", icon: Coffee },
+  ];
 
-  const dishesByCountry = useMemo(() => {
-    const grouped: Record<string, DishWithCountry[]> = {};
-    
-    // Separate drinks from other dishes
-    const nonDrinkDishes = allDishes.filter(dish => dish.category !== 'bebidas');
-    
-    nonDrinkDishes.forEach(dish => {
-      const countryName = dish.country.name;
-      if (!grouped[countryName]) {
-        grouped[countryName] = [];
-      }
-      grouped[countryName].push(dish);
+  // Filtros inteligentes
+  const filteredDishes = useMemo(() => {
+    return dishes.filter((dish) => {
+      const matchesCategory = selectedCategory === "all" || dish.category === selectedCategory;
+      const matchesCountry = !selectedCountry || dish.countryId === selectedCountry;
+      const matchesSearch = !searchQuery || 
+        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dish.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dish.country?.name.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return matchesCategory && matchesCountry && matchesSearch;
     });
+  }, [dishes, selectedCategory, selectedCountry, searchQuery]);
 
-    // Sort countries alphabetically
-    const sortedCountries = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const sortedGrouped = {} as Record<string, DishWithCountry[]>;
-    sortedCountries.forEach(country => {
-      sortedGrouped[country] = grouped[country];
-    });
-
-    return sortedGrouped;
-  }, [allDishes]);
-
-  const drinksByCountry = useMemo(() => {
-    const grouped: Record<string, DishWithCountry[]> = {};
-    
-    const drinkDishes = allDishes.filter(dish => dish.category === 'bebidas');
-    
-    drinkDishes.forEach(dish => {
-      const countryName = dish.country.name;
-      if (!grouped[countryName]) {
-        grouped[countryName] = [];
-      }
-      grouped[countryName].push(dish);
-    });
-
-    // Sort countries alphabetically for drinks too
-    const sortedCountries = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const sortedGrouped = {} as Record<string, DishWithCountry[]>;
-    sortedCountries.forEach(country => {
-      sortedGrouped[country] = grouped[country];
-    });
-
-    return sortedGrouped;
-  }, [allDishes]);
-
-  const handleCountryFilter = (countryId: number | null) => {
-    setSelectedCountry(countryId);
-  };
-
-  const handleCategoryFilter = (category: string) => {
-    setSelectedCategory(category);
-  };
-
+  // Handlers
   const handleDishClick = (dish: DishWithCountry) => {
     setSelectedDish(dish);
   };
 
-  // Country colors mapping
-  const getCountryTheme = (countryName: string) => {
-    const themes: Record<string, { bg: string; text: string; border: string; accent: string }> = {
-      'Suíça': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', accent: 'bg-red-500' },
-      'Alemanha': { bg: 'bg-yellow-50', text: 'text-yellow-800', border: 'border-yellow-200', accent: 'bg-yellow-500' },
-      'Argentina': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', accent: 'bg-blue-500' },
-      'Brasil': { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', accent: 'bg-green-500' },
-      'Chile': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', accent: 'bg-red-500' },
-      'Coreia do Sul': { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', accent: 'bg-purple-500' },
-      'Espanha': { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', accent: 'bg-orange-500' },
-      'França': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', accent: 'bg-blue-500' },
-      'Grécia': { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', accent: 'bg-cyan-500' },
-      'Itália': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', accent: 'bg-emerald-500' },
-      'Japão': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', accent: 'bg-rose-500' },
-      'Portugal': { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accent: 'bg-indigo-500' },
-    };
-    
-    return themes[countryName] || { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200', accent: 'bg-gray-500' };
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        {/* FENUI Banner */}
-        <div className="h-20 fenui-gradient relative overflow-hidden">
-          <div className="absolute inset-0 fenui-mosaic opacity-20"></div>
-          <div className="container mx-auto px-4 h-full flex items-center justify-center relative">
-            <h1 className="font-display text-white text-2xl md:text-3xl font-bold tracking-wide">
-              FENUI 2024
-            </h1>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="container mx-auto px-4 py-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Buscar pratos ou ingredientes..."
-              className="pl-12 py-3 text-lg border-2 rounded-full focus:border-fenui-blue"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* Country Stories Navigation */}
-      <CountryStories
-        countries={countries}
-        selectedCountry={selectedCountry}
-        onCountrySelect={handleCountryFilter}
-      />
-
-      {/* Filter Tabs */}
-      <FilterTabs
-        selectedCategory={selectedCategory}
-        onCategorySelect={handleCategoryFilter}
-      />
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 pb-32">
-        {/* Featured Dishes */}
-        {featuredDishes.length > 0 && (
-          <section className="mb-12">
-            <h2 className="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2">
-              <div className="flex items-center">
-                <Star className="w-7 h-7 text-yellow-500 mr-3 fill-current" />
-                <span>Destaques do Festival</span>
-              </div>
-              <span className="text-sm font-body font-normal text-gray-500 bg-yellow-50 px-3 py-1 rounded-full flex items-center gap-1 ml-auto">
-                <Star className="w-3 h-3 fill-current" />
-                {featuredDishes.length} pratos
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredDishes.map((dish, index) => (
-                <motion.div
-                  key={dish.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <DishCard
-                    dish={dish}
-                    onClick={() => handleDishClick(dish)}
-                    featured
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Food Dishes by Country */}
-        <div className="mb-12">
-          {selectedCountry === null ? (
-            /* Show all dishes grouped by country when no country is selected */
-            Object.entries(dishesByCountry)
-              .sort(([, dishesA], [, dishesB]) => dishesA[0]?.country.order - dishesB[0]?.country.order)
-              .map(([countryName, dishes]) => (
-              <motion.section
-                key={countryName}
-                className="mb-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h2 className={`font-display text-xl font-bold mb-6 flex items-center flex-wrap gap-2 sticky top-32 backdrop-blur-sm py-4 px-4 mx-4 z-20 rounded-lg shadow-sm border ${getCountryTheme(countryName).bg} ${getCountryTheme(countryName).text} ${getCountryTheme(countryName).border}`}>
-                  <div className="flex items-center">
-                    <div className={`w-2 h-8 rounded-full mr-4 ${getCountryTheme(countryName).accent}`}></div>
-                    <span className="text-2xl mr-3">
-                      {dishes[0]?.country.flagEmoji}
-                    </span>
-                    <span>{countryName}</span>
-                  </div>
-                  <span className={`text-sm font-body font-normal px-3 py-1 rounded-full flex items-center gap-1 ml-auto ${getCountryTheme(countryName).bg} border ${getCountryTheme(countryName).border}`}>
-                    <Utensils className="w-3 h-3" />
-                    {dishes.length} {dishes.length === 1 ? 'prato' : 'pratos'}
-                  </span>
-                </h2>
-                <div className="space-y-4">
-                  {dishes.map((dish, index) => (
-                    <motion.div
-                      key={dish.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    >
-                      <DishCard
-                        dish={dish}
-                        onClick={() => handleDishClick(dish)}
-                        horizontal
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.section>
-            ))
-          ) : (
-            /* Show dishes from selected country only */
-            selectedCountry && dishesByCountry[countries.find(c => c.id === selectedCountry)?.name || ''] && (
-              <motion.section
-                className="mb-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h2 className="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2 sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx-4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    <span className="text-3xl mr-4">
-                      {countries.find(c => c.id === selectedCountry)?.flagEmoji}
-                    </span>
-                    <span>{countries.find(c => c.id === selectedCountry)?.name}</span>
-                  </div>
-                  <span className="text-sm font-body font-normal text-gray-500 bg-orange-50 px-3 py-1 rounded-full ml-auto">
-                    {allDishes.filter(d => d.category !== 'bebidas').length} pratos
-                  </span>
-                </h2>
-                <div className="space-y-4">
-                  {allDishes.filter(d => d.category !== 'bebidas').map((dish, index) => (
-                    <motion.div
-                      key={dish.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    >
-                      <DishCard
-                        dish={dish}
-                        onClick={() => handleDishClick(dish)}
-                        horizontal
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.section>
-            )
-          )}
-        </div>
-
-        {/* Drinks Section - Separate */}
-        {Object.keys(drinksByCountry).length > 0 && (
-          <div className="mb-12">
-            <motion.section
-              className="mb-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+    <div className="min-h-screen bg-white flex justify-center">
+      {/* CONTAINER PRINCIPAL - LIMITES FIXOS COMO APP MOBILE */}
+      <div className="app-container">
+      
+        {/* ========================================== */}
+        {/* SEÇÃO: BANNER HEADER COM MOSAICO           */}
+        {/* ========================================== */}
+        <div className="fixed top-0 left-0 right-0 z-50">
+          {/* Container do banner */}
+          <div className="bg-white shadow-sm relative">
+            {/* BANNER MOSAICO */}
+            <FenuiBanner />
+            
+            {/* LOGO FENUI - Sempre centralizada e na mesma posição */}
+            <div 
+              className="absolute left-0 right-0 bottom-0 flex justify-center"
+              style={{ transform: "translateY(40px)" }}
             >
-              <h2 className="font-display text-xl font-bold text-gray-900 mb-6 flex items-center flex-wrap gap-2 sticky top-32 bg-white/95 backdrop-blur-sm py-4 px-4 mx-4 z-20 border-b border-gray-200 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <Coffee className="w-6 h-6 text-blue-600 mr-3" />
-                  <span>Bebidas & Sucos</span>
-                </div>
-                <span className="text-sm font-body font-normal text-gray-500 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1 ml-auto">
-                  <Coffee className="w-3 h-3" />
-                  {Object.values(drinksByCountry).flat().length} opções
-                </span>
-              </h2>
-              
-              <div className="space-y-8">
-                {Object.entries(drinksByCountry).map(([countryName, drinks]) => (
-                  <div key={countryName} className="space-y-4">
-                    <h3 className={`font-display text-lg font-semibold flex items-center py-3 px-4 rounded-lg ${getCountryTheme(countryName).bg} ${getCountryTheme(countryName).text} border ${getCountryTheme(countryName).border}`}>
-                      <div className={`w-1 h-6 rounded-full mr-3 ${getCountryTheme(countryName).accent}`}></div>
-                      <span className="text-xl mr-3">
-                        {drinks[0]?.country.flagEmoji}
-                      </span>
-                      <span>{countryName}</span>
-                      <span className={`ml-auto text-sm font-body font-normal px-2 py-1 rounded-full ${getCountryTheme(countryName).bg} border ${getCountryTheme(countryName).border}`}>
-                        <Coffee className="w-3 h-3 inline mr-1" />
-                        {drinks.length} {drinks.length === 1 ? 'bebida' : 'bebidas'}
-                      </span>
-                    </h3>
-                    <div className="space-y-3">
-                      {drinks.map((drink, index) => (
-                        <motion.div
-                          key={drink.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                        >
-                          <DishCard
-                            dish={drink}
-                            onClick={() => handleDishClick(drink)}
-                            horizontal
-                          />
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.section>
-          </div>
-        )}
-
-        {allDishes.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">
-              Nenhum prato encontrado para os filtros selecionados.
-            </p>
-          </div>
-        )}
-      </main>
-
-      {/* Admin FAB */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <Link href="/admin">
-          <Button
-            size="lg"
-            className="w-14 h-14 rounded-full bg-fenui-dark hover:bg-fenui-dark/90 shadow-lg"
-          >
-            <Settings className="h-6 w-6" />
-          </Button>
-        </Link>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h3 className="font-display text-3xl font-bold mb-2">FENUI 2024</h3>
-            <p className="font-body text-gray-300 text-lg">Festa das Nações de Indaiatuba</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div>
-              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
-                <MapPin className="w-5 h-5" />
-                Local
-              </h4>
-              <p className="font-body text-gray-300">Parque Ecológico de Indaiatuba</p>
-              <p className="font-body text-gray-300">Rua das Nações, 123</p>
+              <motion.div
+                className="bg-fenui-red-600 p-4 rounded-full shadow-2xl border-4 border-white"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <img 
+                  src="/assets/LOGO FENUI.png" 
+                  alt="Logo FENUI" 
+                  className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                />
+              </motion.div>
             </div>
-            
-            <div>
-              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
-                <Clock className="w-5 h-5" />
-                Datas & Horários
-              </h4>
-              <p className="font-body text-gray-300">15 a 25 de Dezembro</p>
-              <p className="font-body text-gray-300">18h às 23h</p>
-            </div>
-            
-            <div>
-              <h4 className="font-display font-bold mb-4 text-yellow-400 flex items-center justify-center md:justify-start gap-2">
-                <Users className="w-5 h-5" />
-                Contato
-              </h4>
-              <div className="flex justify-center md:justify-start gap-4 mt-2">
-                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
-                  <Users className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
-                  <MapPin className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors p-2 bg-gray-800 rounded-full">
-                  <Coffee className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; 2024 FENUI - Festa das Nações de Indaiatuba. Todos os direitos reservados.</p>
           </div>
         </div>
-      </footer>
 
-      {/* Dish Modal */}
-      {selectedDish && (
-        <DishModal
-          dish={selectedDish}
-          isOpen={!!selectedDish}
-          onClose={() => setSelectedDish(null)}
-        />
-      )}
+        {/* Espaçador para compensar o header fixo + logo */}
+        <div className="h-20 md:h-24"></div>
+
+        {/* ========================================== */}
+        {/* SEÇÃO: TÍTULO PRINCIPAL                    */}
+        {/* ========================================== */}
+        <motion.section 
+          className="bg-gray-100 transition-all duration-300"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <div className="bg-gray-100 pt-16 pb-4 relative overflow-hidden">
+            <div className="container-responsive relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-center space-y-0"
+              >
+                <HyperText
+                  as="h1"
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-0 leading-tight"
+                  startOnView={true}
+                  duration={1000}
+                  delay={500}
+                >
+                  Uma volta ao mundo!
+                </HyperText>
+                <p className="text-sm text-gray-600 max-w-lg mx-auto -mt-2">
+                  22ª FENUI - FESTA DAS NAÇÕES UNIDAS DE INDAIATUBA
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
+        
+        {/* ========================================== */}
+        {/* SEÇÃO: BANDEIRAS DOS PAÍSES                */}
+        {/* ========================================== */}
+        <motion.section 
+          className="bg-gray-100 border-b border-gray-200"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        >
+          <div className="container-responsive py-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <CountryStories
+                countries={countries}
+                selectedCountry={selectedCountry}
+                onCountrySelect={setSelectedCountry}
+              />
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* ========================================== */}
+        {/* SEÇÃO: BUSCA E FILTROS                     */}
+        {/* ========================================== */}
+        <motion.section 
+          className="bg-gray-100 border-b border-gray-200"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="container-responsive py-4 space-y-4">
+            {/* Search Bar - Compacto */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="max-w-md mx-auto"
+            >
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-fenui-red-600 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Buscar prato, país ou ingrediente..."
+                  className="pl-10 pr-4 py-3 text-sm border-2 border-fenui-red-600/20 rounded-xl bg-white shadow-sm focus:border-fenui-red-600 focus:ring-fenui-red-600/20 transition-all duration-200"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </motion.div>
+
+            {/* Filtros de Categoria - Novo Design */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
+            >
+              {categories.map((category, index) => {
+                const isActive = selectedCategory === category.id;
+                const Icon = category.icon;
+                
+                return (
+                  <motion.button
+                    key={category.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={cn(
+                      "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full font-medium text-xs whitespace-nowrap transition-all duration-200",
+                      "border focus:outline-none focus:ring-2 focus:ring-fenui-red-600/30 focus:ring-offset-1",
+                      isActive
+                        ? "bg-fenui-red-600 text-white border-fenui-red-600 shadow-sm"
+                        : "bg-white text-fenui-green-600 border-gray-100 hover:border-fenui-red-600/30 hover:bg-fenui-red-600/5 hover:text-fenui-green-700"
+                    )}
+                    whileHover={{ scale: isActive ? 1 : 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Icon className={cn(
+                      "w-3.5 h-3.5",
+                      isActive ? "text-white" : "text-fenui-green-600"
+                    )} />
+                    {category.label}
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* ========================================== */}
+        {/* BANNER CAROUSEL - Se houver banners        */}
+        {/* ========================================== */}
+        {banners.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <BannerCarousel />
+          </motion.div>
+        )}
+
+        {/* ========================================== */}
+        {/* MAIN CONTENT - PRATOS                      */}
+        {/* ========================================== */}
+        <motion.main 
+          id="pratos-section" 
+          className="py-6 pb-36 bg-white"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 1 }}
+        >
+          {filteredDishes.length > 0 ? (
+            <div className="space-y-8">
+              {/* Pratos por País */}
+              {countries
+                .filter(country => 
+                  filteredDishes.some(dish => dish.countryId === country.id)
+                )
+                .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+                .map((country, index) => {
+                  const countryDishes = filteredDishes.filter(
+                    dish => dish.countryId === country.id
+                  );
+                  
+                  return (
+                    <motion.div
+                      key={country.id}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{ duration: 0.8, delay: 0.1 }}
+                    >
+                      <DishCarousel
+                        title={`${country.flagEmoji} ${country.name}`}
+                        dishes={countryDishes}
+                        onDishClick={handleDishClick}
+                      />
+                    </motion.div>
+                  );
+                })}
+            </div>
+          ) : (
+            /* Estado Vazio */
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8 }}
+              className="text-center py-12"
+            >
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Nenhum prato encontrado
+              </h3>
+              <p className="text-gray-600 max-w-md mx-auto mb-4 text-sm">
+                Tente ajustar os filtros ou buscar por outros termos
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("all");
+                    setSelectedCountry(null);
+                  }}
+                  className="px-6 py-2 bg-fenui-red-600 text-white rounded-lg font-medium hover:bg-fenui-red-700 transition-colors text-sm shadow-sm"
+                >
+                  Limpar Filtros
+                </button>
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className="px-6 py-2 bg-white text-fenui-green-600 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm"
+                >
+                  Ver Todos
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </motion.main>
+
+        {/* ========================================== */}
+        {/* BOTTOM NAVIGATION                          */}
+        {/* ========================================== */}
+        <NewBottomNavigation />
+
+        {/* ========================================== */}
+        {/* MODAL DE PRATO                             */}
+        {/* ========================================== */}
+        <AnimatePresence>
+          {selectedDish && (
+            <DishModal
+              dish={selectedDish}
+              isOpen={!!selectedDish}
+              onClose={() => setSelectedDish(null)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* ========================================== */}
+        {/* CARIMBO DE BEM-VINDO                       */}
+        {/* ========================================== */}
+        <AnimatePresence>
+          {showWelcomeStamp && (
+            <motion.div
+              initial={{ scale: 0, rotate: -45, opacity: 0 }}
+              animate={{ scale: 1, rotate: -15, opacity: 1 }}
+              exit={{ scale: 0, rotate: -45, opacity: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 200, 
+                damping: 10,
+                duration: 0.8 
+              }}
+              className="fixed top-20 right-4 pointer-events-none z-50"
+            >
+              {/* Carimbo retangular simples */}
+              <div className="relative">
+                <div 
+                  className="border-4 border-red-600 bg-red-100 px-4 py-3 text-center shadow-xl"
+                  style={{
+                    borderRadius: '12px',
+                    borderStyle: 'solid',
+                    transform: 'rotate(3deg)',
+                  }}
+                >
+                  <div className="text-red-800 font-black text-lg tracking-wider leading-tight">
+                    BEM-VINDO
+                  </div>
+                  <div className="text-red-700 font-bold text-sm tracking-wide leading-tight">
+                    22ª FENUI 2025
+                  </div>
+                  <div className="text-red-600 font-semibold text-xs leading-tight">
+                    04-06 JULHO
+                  </div>
+                  <div className="text-red-500 font-medium text-xs leading-tight mt-1">
+                    BOA VIAGEM! 🌍
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

@@ -1,11 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDishes } from "@/hooks/use-dishes";
 import { useCountries } from "@/hooks/use-countries";
+import { useBanners } from "@/hooks/use-banners";
+import { useEventos } from "@/hooks/use-eventos";
 import { useQuery } from "@tanstack/react-query";
 
 export default function AdminDashboard() {
   const { data: dishes = [] } = useDishes({});
   const { data: countries = [] } = useCountries();
+  const { data: banners = [] } = useBanners();
+  const { data: eventos = [] } = useEventos();
   
   const { data: stats } = useQuery({
     queryKey: ["/api/admin/stats"],
@@ -14,11 +18,14 @@ export default function AdminDashboard() {
   const totalDishes = dishes.length;
   const totalCountries = countries.length;
   const featuredDishes = dishes.filter(dish => dish.isFeatured).length;
+  const activeBanners = banners.filter(banner => banner.isActive).length;
+  const totalEventos = eventos.length;
+  const featuredEventos = eventos.filter(evento => evento.isFeatured).length;
 
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
@@ -55,13 +62,35 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Visualizações Hoje
+              Banners Ativos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-fenui-red">
-              {stats?.todayViews || 0}
+            <div className="text-2xl font-bold text-fenui-red-600">
+              {activeBanners}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Total de Eventos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-600">{totalEventos}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Eventos em Destaque
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">{featuredEventos}</div>
           </CardContent>
         </Card>
       </div>

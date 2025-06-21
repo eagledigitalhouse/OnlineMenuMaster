@@ -7,18 +7,18 @@ async function populateMenu() {
   try {
     // Create countries first
     const countryData = [
-      { name: "Suíça", flagEmoji: "🇨🇭", order: 1 },
-      { name: "Alemanha", flagEmoji: "🇩🇪", order: 2 },
-      { name: "Japão", flagEmoji: "🇯🇵", order: 3 },
-      { name: "África", flagEmoji: "🌍", order: 4 },
-      { name: "Brasil", flagEmoji: "🇧🇷", order: 5 },
-      { name: "Rússia", flagEmoji: "🇷🇺", order: 6 },
-      { name: "China", flagEmoji: "🇨🇳", order: 7 },
-      { name: "Espanha", flagEmoji: "🇪🇸", order: 8 },
-      { name: "Estados Unidos", flagEmoji: "🇺🇸", order: 9 },
-      { name: "Síria", flagEmoji: "🇸🇾", order: 10 },
-      { name: "França", flagEmoji: "🇫🇷", order: 11 },
-      { name: "Itália", flagEmoji: "🇮🇹", order: 12 },
+      { name: "Suíça", flagEmoji: "🇨🇭", flagImage: "https://hatscripts.github.io/circle-flags/flags/ch.svg", order: 1 },
+      { name: "Alemanha", flagEmoji: "🇩🇪", flagImage: "https://hatscripts.github.io/circle-flags/flags/de.svg", order: 2 },
+      { name: "Japão", flagEmoji: "🇯🇵", flagImage: "https://hatscripts.github.io/circle-flags/flags/jp.svg", order: 3 },
+      { name: "África do Sul (Afro-Brasileira)", flagEmoji: "🇿🇦", flagImage: "https://hatscripts.github.io/circle-flags/flags/za.svg", order: 4 },
+      { name: "Brasil", flagEmoji: "🇧🇷", flagImage: "https://hatscripts.github.io/circle-flags/flags/br.svg", order: 5 },
+      { name: "Rússia", flagEmoji: "🇷🇺", flagImage: "https://hatscripts.github.io/circle-flags/flags/ru.svg", order: 6 },
+      { name: "China", flagEmoji: "🇨🇳", flagImage: "https://hatscripts.github.io/circle-flags/flags/cn.svg", order: 7 },
+      { name: "Espanha", flagEmoji: "🇪🇸", flagImage: "https://hatscripts.github.io/circle-flags/flags/es.svg", order: 8 },
+      { name: "Estados Unidos", flagEmoji: "🇺🇸", flagImage: "https://hatscripts.github.io/circle-flags/flags/us.svg", order: 9 },
+      { name: "Síria", flagEmoji: "🇸🇾", flagImage: "https://hatscripts.github.io/circle-flags/flags/sy.svg", order: 10 },
+      { name: "França", flagEmoji: "🇫🇷", flagImage: "https://hatscripts.github.io/circle-flags/flags/fr.svg", order: 11 },
+      { name: "Itália", flagEmoji: "🇮🇹", flagImage: "https://hatscripts.github.io/circle-flags/flags/it.svg", order: 12 },
     ];
 
     console.log("📍 Creating countries...");
@@ -315,24 +315,24 @@ async function populateMenu() {
         order: 9
       },
 
-      // ÁFRICA (Comunidade Coni)
+      // ÁFRICA DO SUL (AFRO-BRASILEIRA) (Comunidade Coni)
       {
         name: "Fufu",
-        description: "Prato típico africano",
-        price: "50.00",
-        countryId: countryMap["África"],
+        description: "Prato típico da África Ocidental, é uma massa feita de mandioca, inhame ou plátano, acompanhada de diversos molhos e carnes. Tradicionalmente comido com as mãos.",
+        price: "15.99",
+        countryId: countryMap["África do Sul (Afro-Brasileira)"],
         category: "salgados",
         tags: [],
         allergens: [],
-        isFeatured: true,
+        isFeatured: false,
         isAvailable: true,
         order: 1
       },
       {
-        name: "Feijoada Completa",
-        description: "Feijoada completa tradicional",
-        price: "50.00",
-        countryId: countryMap["África"],
+        name: "Acarajé",
+        description: "Bolinho de feijão-fradinho frito no dendê, recheado com vatapá, caruru e camarão seco. Patrimônio cultural brasileiro com raízes africanas.",
+        price: "12.50",
+        countryId: countryMap["África do Sul (Afro-Brasileira)"],
         category: "salgados",
         tags: [],
         allergens: [],
@@ -341,22 +341,22 @@ async function populateMenu() {
         order: 2
       },
       {
-        name: "Bolinho de Feijoada",
-        description: "6 unidades de bolinho de feijoada",
-        price: "35.00",
-        countryId: countryMap["África"],
+        name: "Bobotie",
+        description: "Prato nacional da África do Sul, um refogado de carne moída temperada com especiarias e coberto com ovo batido.",
+        price: "18.90",
+        countryId: countryMap["África do Sul (Afro-Brasileira)"],
         category: "salgados",
         tags: [],
-        allergens: ["glúten"],
+        allergens: [],
         isFeatured: false,
         isAvailable: true,
         order: 3
       },
       {
-        name: "Torresmo no Cone",
-        description: "Torresmo crocante servido no cone",
-        price: "20.00",
-        countryId: countryMap["África"],
+        name: "Biltong",
+        description: "Carne seca temperada, especialidade sul-africana. Ideal como petisco ou acompanhamento.",
+        price: "14.50",
+        countryId: countryMap["África do Sul (Afro-Brasileira)"],
         category: "salgados",
         tags: [],
         allergens: [],
@@ -365,11 +365,11 @@ async function populateMenu() {
         order: 4
       },
       {
-        name: "Qumbe",
-        description: "Doce africano (4 unidades)",
-        price: "20.00",
-        countryId: countryMap["África"],
-        category: "doces",
+        name: "Rooibos Tea",
+        description: "Chá vermelho sul-africano, naturalmente sem cafeína, com sabor suave e adocicado.",
+        price: "8.50",
+        countryId: countryMap["África do Sul (Afro-Brasileira)"],
+        category: "bebidas",
         tags: [],
         allergens: [],
         isFeatured: false,

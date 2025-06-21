@@ -37,4 +37,10 @@ export const api = {
   getStats: () => apiRequest("GET", "/api/admin/stats"),
   reorderCountries: (countryIds: number[]) => 
     apiRequest("PUT", "/api/countries/reorder", { countryIds }),
+
+  // Banners
+  getBanners: () => apiRequest("GET", "/api/banners"),
+  createBanner: (data: any) => apiRequest("POST", "/api/banners", data),
+  updateBanner: (id: number, data: any) => apiRequest("PUT", `/api/banners/${id}`, data),
+  deleteBanner: (id: number) => apiRequest("DELETE", `/api/banners/${id}`),
 };

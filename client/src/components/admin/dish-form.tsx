@@ -23,6 +23,7 @@ interface DishFormProps {
   countries: Country[];
   onCancel: () => void;
   onSuccess: () => void;
+  defaultCountryId?: number;
 }
 
 const categories = [
@@ -39,7 +40,7 @@ const availableAllergens = [
   "glúten", "lactose", "ovos", "amendoim", "castanhas", "soja", "peixes", "crustáceos"
 ];
 
-export default function DishForm({ dish, countries, onCancel, onSuccess }: DishFormProps) {
+export default function DishForm({ dish, countries, onCancel, onSuccess, defaultCountryId }: DishFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,10 +51,12 @@ export default function DishForm({ dish, countries, onCancel, onSuccess }: DishF
       description: dish?.description || "",
       price: dish?.price || "0.00",
       image: dish?.image || "",
-      countryId: dish?.countryId || 0,
+      countryId: dish?.countryId || defaultCountryId || 0,
       category: dish?.category || "salgados",
       tags: dish?.tags || [],
       allergens: dish?.allergens || [],
+      rating: dish?.rating || "4.50",
+      reviewCount: dish?.reviewCount || 0,
       isFeatured: dish?.isFeatured || false,
       isAvailable: dish?.isAvailable ?? true,
       order: dish?.order || 0,
@@ -114,6 +117,51 @@ export default function DishForm({ dish, countries, onCancel, onSuccess }: DishF
                     step="0.01" 
                     placeholder="0.00" 
                     {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="rating"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Avaliação (0.00 - 5.00)</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    step="0.01"
+                    min="0"
+                    max="5"
+                    placeholder="4.50" 
+                    {...field}
+                    value={field.value || "4.50"}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="reviewCount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Número de Avaliações</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    min="0"
+                    placeholder="150" 
+                    {...field}
+                    value={field.value || 0}
+                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -202,7 +250,7 @@ export default function DishForm({ dish, countries, onCancel, onSuccess }: DishF
             <FormItem>
               <FormLabel>URL da Imagem</FormLabel>
               <FormControl>
-                <Input placeholder="https://exemplo.com/imagem.jpg" {...field} />
+                <Input placeholder="https://exemplo.com/imagem.jpg" {...field} value={field.value || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>

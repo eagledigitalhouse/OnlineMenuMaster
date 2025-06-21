@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
-import { insertUserSchema, insertCountrySchema, insertDishSchema, insertDishViewSchema } from "@shared/schema";
+import { insertUserSchema, insertCountrySchema, insertDishSchema, insertDishViewSchema, insertBannerSchema, insertEventoSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -188,6 +188,211 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to reorder countries" });
+    }
+  });
+
+  // Banners routes
+  app.get("/api/banners", async (req, res) => {
+    try {
+      const banners = await storage.getBanners();
+      res.json(banners);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch banners" });
+    }
+  });
+
+  app.post("/api/banners", async (req, res) => {
+    try {
+      const validatedData = insertBannerSchema.parse(req.body);
+      const banner = await storage.createBanner(validatedData);
+      res.status(201).json(banner);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to create banner" });
+      }
+    }
+  });
+
+  app.put("/api/banners/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertBannerSchema.parse(req.body);
+      const banner = await storage.updateBanner(id, validatedData);
+      if (!banner) {
+        res.status(404).json({ error: "Banner not found" });
+        return;
+      }
+      res.json(banner);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to update banner" });
+      }
+    }
+  });
+
+  app.delete("/api/banners/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteBanner(id);
+      if (!success) {
+        res.status(404).json({ error: "Banner not found" });
+        return;
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete banner" });
+    }
+  });
+
+  // Eventos routes
+  app.get("/api/eventos", async (req, res) => {
+    try {
+      const { dia } = req.query;
+      const eventos = await storage.getEventos(dia as string);
+      res.json(eventos);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch eventos" });
+    }
+  });
+
+  app.get("/api/eventos/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const evento = await storage.getEventoById(id);
+      if (!evento) {
+        res.status(404).json({ error: "Evento not found" });
+        return;
+      }
+      res.json(evento);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch evento" });
+    }
+  });
+
+  app.post("/api/eventos", async (req, res) => {
+    try {
+      const validatedData = insertEventoSchema.parse(req.body);
+      const evento = await storage.createEvento(validatedData);
+      res.status(201).json(evento);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to create evento" });
+      }
+    }
+  });
+
+  app.put("/api/eventos/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertEventoSchema.parse(req.body);
+      const evento = await storage.updateEvento(id, validatedData);
+      if (!evento) {
+        res.status(404).json({ error: "Evento not found" });
+        return;
+      }
+      res.json(evento);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to update evento" });
+      }
+    }
+  });
+
+  app.delete("/api/eventos/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteEvento(id);
+      if (!success) {
+        res.status(404).json({ error: "Evento not found" });
+        return;
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete evento" });
+    }
+  });
+
+  // Upload em lote de pratos
+  app.post("/api/dishes/bulk", async (req, res) => {
+    try {
+      console.log("🚀 Iniciando upload em lote de pratos...");
+      
+      const pratosData = req.body;
+      
+      if (!Array.isArray(pratosData)) {
+        return res.status(400).json({ 
+          error: "Dados devem ser um array de pratos",
+          example: [{ name: "Nome", description: "Desc", price: "10.00", countryId: 49, category: "salgados" }]
+        });
+      }
+
+      console.log(`📊 Recebidos ${pratosData.length} pratos para upload...`);
+
+      // Validar estrutura básica
+      for (let i = 0; i < pratosData.length; i++) {
+        const prato = pratosData[i];
+        if (!prato.name || !prato.description || !prato.price || !prato.countryId || !prato.category) {
+          return res.status(400).json({
+            error: `Prato ${i + 1} está com dados incompletos`,
+            prato: prato,
+            required: ["name", "description", "price", "countryId", "category"]
+          });
+        }
+      }
+
+      console.log("✅ Validação passou!");
+
+      // Inserir pratos no banco
+      let sucessos = 0;
+      let erros = [];
+
+      for (const prato of pratosData) {
+        try {
+          const novoPrato = await storage.createDish({
+            name: prato.name,
+            description: prato.description,
+            price: prato.price,
+            image: prato.image || null,
+            countryId: prato.countryId,
+            category: prato.category,
+            tags: prato.tags || [],
+            allergens: prato.allergens || [],
+            rating: prato.rating || "0.00",
+            reviewCount: prato.reviewCount || 0,
+            isFeatured: prato.isFeatured || false,
+            isAvailable: prato.isAvailable !== false,
+            order: prato.order || 0
+          });
+
+          console.log(`✅ ${sucessos + 1}. "${novoPrato.name}" adicionado!`);
+          sucessos++;
+        } catch (error) {
+          console.log(`❌ Erro ao adicionar "${prato.name}":`, error);
+          erros.push({ prato: prato.name, erro: error.message });
+        }
+      }
+
+      console.log(`🎉 Upload concluído! Sucessos: ${sucessos}, Erros: ${erros.length}`);
+
+      res.json({
+        message: "Upload em lote concluído!",
+        sucessos,
+        erros: erros.length,
+        total: pratosData.length,
+        detalhesErros: erros
+      });
+
+    } catch (error) {
+      console.error("❌ Erro crítico no upload:", error);
+      res.status(500).json({ error: "Erro interno no upload", details: error.message });
     }
   });
 

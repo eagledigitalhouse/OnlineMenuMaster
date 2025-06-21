@@ -1,0 +1,69 @@
+A exigência de gerenciar a programação pela área administrativa é o que torna o projeto profissional. Isso garante que o evento seja dinâmico e que você possa fazer ajustes em tempo real sem depender de um programador.
+
+Dica de Estrutura de Dados (O Modelo Evento):
+A forma como organizamos os dados no banco de dados define o quão flexível seremos. A tabela eventos deve ter:
+
+titulo: O nome que atrai o público.
+descricao: O texto que convence e cria desejo.
+dia: Campo crucial. Usar um formato de data (como 20/06/2025) permite que o sistema agrupe os eventos por dia automaticamente.
+horario_inicio e horario_fim: Essencial para o público se organizar.
+local: Ajuda a guiar as pessoas pelo evento. Ex: "Palco Mundo", "Tenda Gastronômica".
+imagem_url: A imagem é o que mais vende uma atração. Ter um campo para ela é fundamental.
+Dica de Gerenciamento:
+Na sua área administrativa, o ideal é ter um formulário simples com todos esses campos. Assim, para adicionar uma nova atração, basta preencher os campos e salvar. A mágica acontece e ela aparece no site instantaneamente.
+
+2. A Experiência Mágica: O "Diário de Bordo" (Frontend)
+É aqui que transformamos dados em uma experiência memorável.
+
+Dica de Navegação (As Abas de Dias):
+Para os 3 dias, a melhor navegação é um sistema de abas. É mais rápido e intuitivo que um menu suspenso. Para manter nosso tema, podemos estilizá-las para parecerem abas de um guia de viagem ou de um diário de bordo. A aba ativa deve ter um destaque visual claro.
+
+Exemplo: [ SEXTA, 20/JUN ] [ SÁBADO, 21/JUN ] [ DOMINGO, 22/JUN ]
+Dica de Layout (A Timeline Vertical):
+Uma lista simples é funcional, mas chata. Uma timeline vertical é visualmente cativante e conta a história do dia em ordem cronológica.
+
+O Design: Uma linha desce pela página e os "cards" de cada evento saem dela, alternando os lados. Isso cria um ritmo visual agradável e evita a monotonia.
+Dica de Design do Card:
+Cada evento na timeline é uma oportunidade de encantar. O card deve ser limpo e informativo, mostrando:
+
+A imagem da atração (grande e de impacto).
+O horário em destaque.
+O título do evento.
+O local com um ícone (ex: 📍 Palco Principal), para reconhecimento rápido.
+A descrição curta.
+Dica de Animação (O Toque Premium):
+As animações são o que elevam a percepção de qualidade.
+
+Transição de Abas: Ao mudar de dia, os eventos não devem simplesmente piscar e trocar. Eles devem sair com uma animação suave (fade-out) e os novos devem entrar (fade-in).
+Carregamento dos Eventos: Quando uma timeline de um dia carrega, os cards podem aparecer de forma escalonada (stagger), de cima para baixo. Isso cria um efeito cascata muito elegante.
+O Prompt Mestre para o Cursor (A Ordem para a I.A.)
+E aqui está o resumo de todas essas dicas, traduzido em um único comando poderoso para a sua I.A.
+
+▶️ PROMPT MESTRE:
+
+"Olá! Preciso criar a funcionalidade completa da página de Programação do meu evento FENUI. A experiência do usuário deve ser bonita e interativa, e eu preciso conseguir gerenciar tudo por uma área administrativa.
+
+A Visão Criativa (O que o usuário vê):
+A página deve ser um 'Diário de Bordo', mostrando as atrações de três dias de evento.
+No topo, deve haver um sistema de abas para selecionar o dia ('Sexta', 'Sábado', 'Domingo'). Ao selecionar um dia, a programação abaixo deve mudar suavemente.
+A programação do dia selecionado deve ser exibida em uma timeline vertical, com cada evento sendo um 'card' que mostra uma imagem, horário, título, local e uma breve descrição.
+A página deve ter animações fluidas ao trocar de dia e ao carregar os eventos na tela.
+
+A Base de Tudo (O que fazer no backend):
+Para que isso funcione, preciso que você primeiro defina e crie a tabela necessária no nosso banco de dados (PostgreSQL com Drizzle ORM). Esta tabela, que pode se chamar eventos, precisa de colunas para armazenar:
+
+título do evento
+descrição
+dia e horário
+local
+link da imagem
+Depois de criar a tabela, a página de programação que você vai construir em React deve buscar esses dados de uma API.
+
+Resumo da Tareha:
+Construa a funcionalidade completa da página de programação. Isso inclui:
+
+Criar a tabela eventos no banco de dados.
+Criar a página em React que busca os dados dessa tabela via API.
+Apresentar os dados em um layout de abas por dia e uma timeline vertical para os eventos.
+Adicionar animações suaves para uma experiência premium.
+Confio na sua capacidade de criar tanto a estrutura de dados quanto a interface de usuário elegante que descrevi."

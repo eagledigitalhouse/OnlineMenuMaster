@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 export default {
   darkMode: ["class"],
@@ -51,6 +53,39 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
+        // Cores FENUI
+        "fenui-red": {
+          50: "var(--fenui-red-50)",
+          100: "var(--fenui-red-100)",
+          DEFAULT: "var(--fenui-red-500)",
+          500: "var(--fenui-red-500)",
+          600: "var(--fenui-red-600)",
+          700: "var(--fenui-red-700)",
+        },
+        "fenui-yellow": {
+          50: "var(--fenui-yellow-50)",
+          100: "var(--fenui-yellow-100)",
+          DEFAULT: "var(--fenui-yellow-500)",
+          500: "var(--fenui-yellow-500)",
+          600: "var(--fenui-yellow-600)",
+          700: "var(--fenui-yellow-700)",
+        },
+        "fenui-green": {
+          50: "var(--fenui-green-50)",
+          100: "var(--fenui-green-100)",
+          DEFAULT: "var(--fenui-green-500)",
+          500: "var(--fenui-green-500)",
+          600: "var(--fenui-green-600)",
+          700: "var(--fenui-green-700)",
+        },
+        "fenui-blue": {
+          50: "var(--fenui-blue-50)",
+          100: "var(--fenui-blue-100)",
+          DEFAULT: "var(--fenui-blue-500)",
+          500: "var(--fenui-blue-500)",
+          600: "var(--fenui-blue-600)",
+          700: "var(--fenui-blue-700)",
+        },
         sidebar: {
           DEFAULT: "var(--sidebar-background)",
           foreground: "var(--sidebar-foreground)",
@@ -86,5 +121,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [tailwindcssAnimate, typography],
 } satisfies Config;

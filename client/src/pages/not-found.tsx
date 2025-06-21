@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
+import NewBottomNavigation from "@/components/new-bottom-navigation";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex justify-center">
+      <div className="app-container shadow-lg md:shadow-xl lg:shadow-2xl w-full flex items-center justify-center">
       <Card className="w-full max-w-md mx-4">
         <CardContent className="pt-6">
           <div className="flex mb-4 gap-2">
@@ -16,6 +18,10 @@ export default function NotFound() {
           </p>
         </CardContent>
       </Card>
+      
+      {/* Navegação Inferior */}
+      <NewBottomNavigation />
+      </div>
     </div>
   );
 }

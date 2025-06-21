@@ -94,9 +94,9 @@ export default function CountryForm({ country, onCancel, onSuccess }: CountryFor
           name="flagImage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>URL da Imagem da Bandeira (opcional)</FormLabel>
+              <FormLabel>URL da Bandeira Circle Flags</FormLabel>
               <FormControl>
-                <Input placeholder="https://exemplo.com/bandeira.jpg" {...field} />
+                <Input placeholder="https://hatscripts.github.io/circle-flags/flags/br.svg" {...field} value={field.value || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
