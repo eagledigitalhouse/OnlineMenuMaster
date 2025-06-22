@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useCountries } from "@/hooks/use-countries";
 import { useDishes } from "@/hooks/use-dishes";
 import { useBanners } from "@/hooks/use-banners";
@@ -67,9 +67,9 @@ export default function Home() {
   }, [dishes, selectedCategory, selectedCountry, searchQuery]);
 
   // Handlers
-  const handleDishClick = (dish: DishWithCountry) => {
+  const handleDishClick = useCallback((dish: DishWithCountry) => {
     setSelectedDish(dish);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white flex justify-center">

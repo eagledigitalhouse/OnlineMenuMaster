@@ -4,7 +4,7 @@ import DepartureBoard from "./ui/departure-board";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, Star, MapPin, UtensilsCrossed } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ interface DishCarouselProps {
   title: string;
 }
 
-export default function DishCarousel({
+const DishCarousel = memo(function DishCarousel({
   dishes,
   onDishClick,
   title,
@@ -246,4 +246,6 @@ export default function DishCarousel({
 
     </motion.section>
   );
-} 
+});
+
+export default DishCarousel; 
