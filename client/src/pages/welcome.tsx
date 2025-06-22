@@ -2,8 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, UtensilsCrossed, Plane, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { useState, useEffect } from "react";
-import NewBottomNavigation from "@/components/new-bottom-navigation";
+import { useState, useEffect, useMemo } from "react";
 
 // Componente de animação de digitação
 const TypewriterText = ({ text, delay = 0, speed = 50 }: { text: string, delay?: number, speed?: number }) => {
@@ -27,6 +26,27 @@ const TypewriterText = ({ text, delay = 0, speed = 50 }: { text: string, delay?:
 export default function Welcome() {
   const [, setLocation] = useLocation();
   const [showCloudTransition, setShowCloudTransition] = useState(false);
+
+  // Otimização: Calcular valores aleatórios apenas uma vez
+  const cloudData = useMemo(() => Array.from({ length: 6 }).map(() => ({
+    top: `${Math.random() * 60 + 5}%`,
+    duration: Math.random() * 20 + 25, // Duração entre 25s e 45s
+    delay: Math.random() * 10,
+    repeatDelay: Math.random() * 8,
+    xFrom: -250,
+    xTo: window.innerWidth + 200,
+    yKeyframes: [0, -20 + Math.random() * 40, 10 - Math.random() * 20, 0],
+    scale: Math.random() * 0.4 + 0.8, // Escala entre 0.8 e 1.2
+    opacity: Math.random() * 0.3 + 0.4, // Opacidade entre 0.4 e 0.7
+    filter: `brightness(${Math.random() * 0.4 + 1.1}) contrast(${Math.random() * 0.3 + 0.8})`,
+  })), []);
+
+  const particleData = useMemo(() => Array.from({ length: 20 }).map(() => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    duration: Math.random() * 2 + 2, // Duração entre 2s e 4s
+    delay: Math.random() * 3,
+  })), []);
 
   const handleExploreMenu = () => {
     // Definir flag para mostrar carimbo na página home
@@ -170,167 +190,32 @@ export default function Welcome() {
       
       {/* Nuvens de fundo - ATRÁS DO CARTÃO */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5">
-        {/* NUVEM GRANDE NO TOPO */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute top-0 w-64 h-40 select-none"
-          style={{
-            filter: 'brightness(1.3) contrast(0.9)',
-            transform: 'rotate(-5deg)',
-          }}
-          animate={{
-            x: [-250, window.innerWidth + 200],
-            opacity: 0.7,
-          }}
-          transition={{
-            duration: 45,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 2,
-            repeatDelay: Math.random() * 8,
-          }}
-        />
-
-        {/* Nuvem 1 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-40 h-25 select-none"
-          style={{
-            filter: 'brightness(1.3) contrast(0.9)',
-            top: `${Math.random() * 60 + 5}%`,
-          }}
-          animate={{
-            x: [-160, window.innerWidth + 100],
-            opacity: 0.6,
-          }}
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: "linear",
-            repeatDelay: Math.random() * 5,
-          }}
-        />
-
-        {/* Nuvem 2 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-48 h-30 select-none"
-          style={{
-            filter: 'brightness(1.2) contrast(1.0)',
-            transform: 'scaleX(-1)',
-            top: `${Math.random() * 50 + 10}%`,
-          }}
-          animate={{
-            x: [window.innerWidth + 100, -200],
-            y: [0, -20, 10, 0],
-            opacity: 0.5,
-          }}
-          transition={{
-            duration: 28,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 3,
-            repeatDelay: Math.random() * 4,
-          }}
-        />
-
-        {/* Nuvem 3 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-44 h-28 select-none"
-          style={{
-            filter: 'brightness(1.4) contrast(0.8)',
-            transform: 'rotate(15deg)',
-            top: `${Math.random() * 40 + 20}%`,
-          }}
-          animate={{
-            x: [-180, window.innerWidth + 120],
-            y: [0, -15, 8, 0],
-            opacity: 0.55,
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 8,
-            repeatDelay: Math.random() * 6,
-          }}
-        />
-
-        {/* Nuvem 4 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-36 h-22 select-none"
-          style={{
-            filter: 'brightness(1.1) contrast(1.1)',
-            transform: 'rotate(-10deg) scaleX(-1)',
-            top: `${Math.random() * 55 + 15}%`,
-          }}
-          animate={{
-            x: [-150, window.innerWidth + 140],
-            y: [0, 15, -8, 0],
-            opacity: 0.45,
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 15,
-            repeatDelay: Math.random() * 7,
-          }}
-        />
-
-        {/* Nuvem 5 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-24 h-15 select-none"
-          style={{
-            filter: 'brightness(1.5) contrast(0.7)',
-            transform: 'scale(0.8)',
-            top: `${Math.random() * 45 + 5}%`,
-          }}
-          animate={{
-            x: [-100, window.innerWidth + 80],
-            opacity: 0.4,
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 6,
-            repeatDelay: Math.random() * 3,
-          }}
-        />
-
-        {/* Nuvem 6 - Posição aleatória */}
-        <motion.img
-          src="/assets/cloud.png"
-          alt="nuvem"
-          className="absolute w-56 h-35 select-none"
-          style={{
-            filter: 'brightness(1.2) contrast(0.9)',
-            transform: 'rotate(5deg)',
-            top: `${Math.random() * 35 + 10}%`,
-          }}
-          animate={{
-            x: [-220, window.innerWidth + 180],
-            y: [0, -20, 12, 0],
-            opacity: 0.35,
-          }}
-          transition={{
-            duration: 42,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 25,
-            repeatDelay: Math.random() * 8,
-          }}
-        />
+        {cloudData.map((cloud, i) => (
+          <motion.img
+            key={i}
+            src="/assets/cloud.png"
+            alt="nuvem"
+            className="absolute select-none"
+            style={{
+              top: cloud.top,
+              filter: cloud.filter,
+              willChange: 'transform, opacity', // Otimização de performance
+              transform: `scale(${cloud.scale}) ${i % 2 === 0 ? 'scaleX(-1)' : ''}`,
+            }}
+            animate={{
+              x: [cloud.xFrom, cloud.xTo],
+              y: cloud.yKeyframes,
+              opacity: cloud.opacity,
+            }}
+            transition={{
+              duration: cloud.duration,
+              repeat: Infinity,
+              ease: "linear",
+              delay: cloud.delay,
+              repeatDelay: cloud.repeatDelay,
+            }}
+          />
+        ))}
 
         {/* NUVEM GIGANTE EMBAIXO - Fixa */}
         <motion.img
@@ -591,20 +476,21 @@ export default function Welcome() {
 
       {/* Particles/Stars Background Effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {particleData.map((particle, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-white rounded-full"
-            initial={{ 
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              opacity: 0
+            style={{ 
+              willChange: 'opacity', // Otimização de performance
+              x: particle.x, 
+              y: particle.y 
             }}
+            initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
             transition={{
-              duration: 3,
+              duration: particle.duration,
               repeat: Infinity,
-              delay: Math.random() * 2,
+              delay: particle.delay,
             }}
           />
         ))}
@@ -900,9 +786,6 @@ export default function Welcome() {
           }}
         />
       </div>
-      
-      {/* Navegação Inferior */}
-      <NewBottomNavigation />
       </div>
     </div>
   );
